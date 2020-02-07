@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Simple CRUD Vue.js</title>
+    <!-- STYLES -->
+    <link
+        href="https://fonts.googleapis.com/css?family=Montserrat:600|Roboto:400,500,600,700|Poppins:400,600&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet">
+    <!-- BOOTSTRAP 4 -->
+    <link rel="stylesheet" href="../dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../dist/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../dist/css/mCustomScrollbar.min.css">
+    <link rel="stylesheet" href="../dist/css/material.css">
+    <!-- ANIMATE CSS -->
+    <link rel="stylesheet" href="../dist/css/animate.css">
+    <!-- END STYLES -->
+</head>
+
+<body>
+
+    <!-- MAIN APP TEMPLATE -->
+    <div class="mb-3">
+        <main id="app">
+        </main>
+    </div>
+    <!-- END MAIN APP TEMPLATE -->
+
+    <!-- DASHBOARD -->
+    <template id="course-dashboard">
+        <div>
+            <navbar-component></navbar-component>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h2 class="font-weight-bold text-poppins">Courses availables</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-lg-3 mb-3" v-for="course in filteredcourses">
+                        <router-link :to="{name: 'course', params: {course_id: course.id}}">
+                            <div class="card">
+                                <img src="https://www.mendix.com/wp-content/uploads/blog-post-header-UX-DigTrans.jpg"
+                                    class="card-img-top" :alt="course.name" :title="course.name">
+                                <div class="card-body ">
+                                    <h5 class="font-weight-bold text-poppins mb-0">{{ course.name }}</h5>
+                                    <h6 class="mt-0 text-muted text-truncate">{{ course.description }}</h6>
+                                </div>
+                                <div class="card-footer text-right">
+                                    <div class="card-course-price">
+                                        <h5 class="font-weight-bold text-poppins my-0">${{ course.price }} MXN</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </router-link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- DATATABLE LIST -->
+    <template id="course-list">
+        <div>
+            <navbar-component></navbar-component>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2 class="font-weight-bold text-poppins">Courses list</h2>
+                    </div>
+                    <div class="col-md-6 text-md-right mb-3">
+                        <router-link :to="{path: '/course-dashboard'}" class="btn btn-link ripple ripple-dark">
+                            <i class="material-icons-outlined">bookmarks</i>
+                            Courses
+                        </router-link>
+                        <router-link class="btn btn-primary d-none-responsive" :to="{path: '/course-add'}">
+                            <i class="material-icons">add</i>
+                            Add course
+                        </router-link>
+                    </div>
+                    <!-- <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="search-element">course name</label>
+                            <input v-model="searchKey" class="form-control" id="search-element" required />
+                        </div>
+                    </div> -->
+                    <div class="col-md-12">
+                        <div class="card card-outline">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless table-hover display">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-truncate" data-toggle="tooltip"
+                                                    data-placement="bottom" title="Name">Name</th>
+                                                <th scope="col" class="text-truncate" data-toggle="tooltip"
+                                                    data-placement="bottom" title="Description">Description</th>
+                                                <th scope="col" class="text-truncate" data-toggle="tooltip"
+                                                    data-placement="bottom" title="Price">Price</th>
+                                                <th scope="col" class="text-truncate" data-toggle="tooltip"
+                                                    data-placement="bottom" title="Status">Status</th>
+                                                <th scope="col" class="text-truncate" data-toggle="tooltip"
+                                                    data-placement="bottom" title="Actions" style="width: 10%;">Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="course in filteredcourses">
+                                                <td>
+                                                    {{ course.name }}
+                                                </td>
+                                                <td>{{ course.description }}</td>
+                                                <td>
+                                                    <i class="material-icons">attach_money</i>
+                                                    {{ course.price }}
+                                                </td>
+                                                <td v-if="course.status == 'Online'">
+                                                    <i class="material-icons text-primary">cloud_queue</i>
+                                                    {{ course.status }}
+                                                </td>
+                                                <td v-else>
+                                                    <i class="material-icons text-secondary">cloud_off</i>
+                                                    {{ course.status }}
+                                                </td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-link btn-sm dropdown-toggle"
+                                                            type="button" id="dropdownMenu2" data-toggle="dropdown"
+                                                            aria-haspopup="true" aria-expanded="false">
+                                                            <i class="material-icons">
+                                                                more_vert
+                                                            </i>
+                                                        </button>
+                                                        <div class="dropdown-menu animate zoomIn"
+                                                            aria-labelledby="dropdownMenu2">
+                                                            <router-link class="dropdown-item py-2" type="button"
+                                                                :to="{name: 'course', params: {course_id: course.id}}">
+                                                                <i class="material-icons-outlined mr-2">
+                                                                    remove_red_eye
+                                                                </i>
+                                                                Preview
+                                                            </router-link>
+                                                            <router-link class="dropdown-item py-2" type="button"
+                                                                :to="{name: 'course-edit', params: {course_id: course.id}}">
+                                                                <i class="material-icons-outlined mr-2">
+                                                                    edit
+                                                                </i>
+                                                                Edit
+                                                            </router-link>
+                                                            <router-link class="dropdown-item py-2" type="button"
+                                                                :to="{name: 'course-delete', params: {course_id: course.id}}">
+                                                                <i class="material-icons-outlined mr-2">
+                                                                    delete
+                                                                </i>
+                                                                Remove
+                                                            </router-link>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <btn-fab-new></btn-fab-new>
+        </div>
+    </template>
+
+    <!-- PROFILE -->
+    <template id="profile">
+        <div>
+            <navbar-component></navbar-component>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <section class="bg-header border-radius-8"></section>
+                    </div>
+                    <div class="col-md-12" v-for="profile in profiles">
+                        <div class="card card-outline mb-3">
+                            <div class="card-header text-center">
+                                <img class="img-fluid img-profile-photo" width="150px" :src="profile.img"
+                                    :alt="profile.name" :title="profile.name">
+                                <h2 class="font-weight-bold text-poppins mt-3">{{ profile.name }} {{ profile.lastName }}
+                                </h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-3 p-0">
+                                        <router-link to="/">
+                                            <i class="material-icons-outlined icon-wrap-secondary">edit</i>
+                                            <h6 class="mt-2">Edit profile</h6>
+                                        </router-link>
+                                    </div>
+                                    <div class="col-3 p-0">
+                                        <router-link to="/">
+                                            <i class="material-icons-outlined icon-wrap-secondary">dashboard</i>
+                                            <h6 class="mt-2">List</h6>
+                                        </router-link>
+                                    </div>
+                                    <div class="col-3 p-0">
+                                        <router-link to="/course-dashboard">
+                                            <i class="material-icons-outlined icon-wrap-secondary">bookmarks</i>
+                                            <h6 class="mt-2">Courses</h6>
+                                        </router-link>
+                                    </div>
+                                    <div class="col-3 p-0">
+                                        <router-link to="/settings">
+                                            <i class="material-icons-outlined icon-wrap-secondary">settings</i>
+                                            <h6 class="mt-2">Settings</h6>
+                                        </router-link>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mt-5">
+                                        <h6><i class="material-icons-outlined mr-2">work_outline</i> UI/UX at Google LLC
+                                        </h6>
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <h6><i class="material-icons-outlined mr-2">person</i> 23 years old</h6>
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <h6><i class="material-icons-outlined mr-2">access_time</i> Joined February 2020
+                                        </h6>
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <h6><i class="material-icons-outlined mr-2">home</i> Lives in Canada</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-outline">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h3 class="font-weight-bold text-poppins">Favorites courses</h3>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <router-link to="/course-dashboard" class="btn btn-link">View all</router-link>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-3"
+                                        v-for="course in courses.slice(0,6)">
+                                        <router-link :to="{name: 'course', params: {course_id: course.id}}">
+                                            <div class="card card-outline card-secondary">
+                                                <div class="card-body">
+                                                    <div class="media">
+                                                        <img :src="course.img" class="mr-3" width="64px"
+                                                            :title="course.name" :alt="course.name">
+                                                        <div class="media-body text-truncate">
+                                                            <h5 class="mt-0 font-weight-bold text-secondary">
+                                                                {{course.name}}</h5>
+                                                            <h6 class="text-secondary">{{course.description}}</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </router-link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- SETTINGS -->
+    <template id="settings">
+        <div>
+            <navbar-component></navbar-component>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h2 class="font-weight-bold text-poppins">Settings</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless table-hover">
+                                        <thead>
+                                            <th>Visual options</th>
+                                            <th></th>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Dark mode</td>
+                                                <td class="text-center">
+                                                    <div>
+                                                        <div class="theme-switch">
+                                                            <label class="switch">
+                                                                <input type="checkbox" id="checkbox" name="checkbox">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                            <label for="checkbox"></label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- CREATE -->
+    <template id="course-add">
+        <div>
+            <navbar-component></navbar-component>
+            <div class="container mt-4 mb-3">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="card card-outline">
+                            <div class="card-body">
+                                <h2 class="font-weight-bold text-poppins mb-4">Add new course</h2>
+                                <form v-on:submit="createcourse" class="form-row">
+                                    <div class="col-md-6">
+                                        <div class="form-label-group">
+                                            <input class="form-control form-control-material-outlined" id="add-name"
+                                                v-model="course.name" placeholder="Name" required autocomplete="off" />
+                                            <label for="add-name">Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-label-group">
+                                            <input type="number" class="form-control form-control-material-outlined"
+                                                id="add-price" v-model="course.price" placeholder="Price" required
+                                                autocomplete="off" />
+                                            <label for="add-price">Price</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-label-group">
+                                            <input type="url" class="form-control form-control-material-outlined"
+                                                id="add-img" v-model="course.img" placeholder="Image URL" required
+                                                autocomplete="off" />
+                                            <label for="add-img">Image URL</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <textarea class="form-control form-control-material-outlined"
+                                                id="add-description" rows="3" v-model="course.description"
+                                                placeholder="Description" required autocomplete="off"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Status</label><br>
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input v-model="course.status" value="Online" type="radio" id="online"
+                                                    name="status" class="custom-control-input">
+                                                <label class="custom-control-label" for="online">Online</label>
+                                            </div>
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input v-model="course.status" value="Offline" type="radio" id="offline"
+                                                    name="status" class="custom-control-input">
+                                                <label class="custom-control-label" for="offline">Offline</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 text-right mt-3">
+                                        <router-link class="btn btn-link ripple ripple-dark" :to="{path: '/'}">Cancel
+                                        </router-link>
+                                        <button type="submit" class="btn btn-primary">Create</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- READ -->
+    <template id="course">
+        <div>
+            <navbar-component></navbar-component>
+            <section class="bg-header">
+                <div class="container pt-4">
+                    <div class="row">
+                        <div class="col-6 mb-2 text-md-left">
+                            <router-link to="/course-dashboard" class="btn btn-secondary ripple ripple-dark">
+                                <i class="material-icons">chevron_left</i>
+                                Back
+                            </router-link>
+                        </div>
+                        <!-- <div class="col-6 text-right">
+                            <button class="btn btn-secondary ripple ripple-dark">
+                                <i class="material-icons-outlined ">star_border</i>
+                            </button>
+                        </div> -->
+                    </div>
+                </div>
+            </section>
+            <section class="bg-body">
+                <div class="container mb-3">
+                    <div class="row pt-1">
+                        <div class="col-md-12 pb-5">
+                            <div class="card card-outline wow fadeInLeft">
+                                <div class="card-header text-center">
+                                    <img :src="course.img" alt="{{ course.img }}" :title="course.name"
+                                        class="img-fluid mb-2" width="100px">
+                                    <h1 class="font-weight-bold text-poppins mb-3">{{ course.name }}</h1>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <h5>{{ course.description }}</h5>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <h4 class="font-weight-bold">Price:</h4>
+                                            <h5>${{ course.price }}</h5>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <h4 class="font-weight-bold">Status:</h4>
+                                            <h5 v-if="course.status == 'Online'">
+                                                <i class="material-icons text-primary">cloud_queue</i>
+                                                {{ course.status }}
+                                            </h5>
+                                            <h5 v-else>
+                                                <i class="material-icons text-secondary">cloud_off</i>
+                                                {{ course.status }}
+                                            </h5>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <h4 class="font-weight-bold">Official website:</h4>
+                                            <h5><a :href="course.website" class="text-secondary"
+                                                    target="_blank">{{ course.website }}</a></h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <btn-fab-fav></btn-fab-fav>
+        </div>
+    </template>
+
+    <!-- UPDATE -->
+    <template id="course-edit">
+        <div>
+            <navbar-component></navbar-component>
+            <div class="container mt-4 mb-3">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="card card-outline">
+                            <div class="card-body">
+                                <h2 class="font-weight-bold text-poppins mb-3">Edit course</h2>
+                                <form v-on:submit="updatecourse" class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="edit-name">Name</label>
+                                        <input class="form-control form-control-material" id="edit-name"
+                                            v-model="course.name" required />
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="edit-price">Price</label>
+                                        <input type="number" class="form-control form-control-material" id="edit-price"
+                                            v-model="course.price" />
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <label for="edit-description">Description</label>
+                                        <textarea class="form-control form-control-material" id="edit-description"
+                                            rows="3" v-model="course.description"></textarea>
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <label for="edit-img">Image URL</label>
+                                        <input type="url" class="form-control form-control-material" id="edit-img"
+                                            v-model="course.img" />
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <label for="">Status</label><br>
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input v-model="course.status" value="Online" type="radio" id="edit-online"
+                                                name="status" class="custom-control-input">
+                                            <label class="custom-control-label" for="edit-online">Online</label>
+                                        </div>
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input v-model="course.status" value="Offline" type="radio"
+                                                id="edit-offline" name="status" class="custom-control-input">
+                                            <label class="custom-control-label" for="edit-offline">Offline</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 text-right">
+                                        <router-link to="/" class="btn btn-link ripple ripple-dark">Cancel</router-link>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- DELETE -->
+    <template id="course-delete">
+        <div>
+            <navbar-component></navbar-component>
+            <div class="container mt-4 mb-3">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="card card-outline">
+                            <div class="card-body">
+                                <h2 class="font-weight-bold text-poppins">Delete course "{{ course.name }}"?</h2>
+                                <form v-on:submit="deletecourse">
+                                    <h6 class="text-red my-3">The action cannot be undone.</h6>
+
+                                    <div class="text-right">
+                                        <router-link to="/" class="btn btn-link ripple ripple-dark">Cancel</router-link>
+                                        <button type="submit" class="btn btn-danger-light">Delete</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- BOTTOM NAVBAR FOR WEB -->
+    <div class="bottom-nav py-3 mt-5">
+        <div class="row text-center">
+            <div class="col-4">
+                <a href="../views/index.html" class="ripple active">
+                    <i class="material-icons-outlined">dashboard</i><br>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="#" class="ripple">
+                    <i class="material-icons-outlined">search</i><br>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="#" class="ripple">
+                    <i class="material-icons-outlined">settings</i><br>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- END BOTTOM NAVBAR FOR WEB -->
+
+    <!-- SCRIPTS -->
+    <script src="../dist/js/jquery.min.js"></script>
+    <script src="../dist/js/popper.js"></script>
+    <script src="../dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+    <script src="../dist/js/wow.js"></script>
+    <script src="../dist/js/mCustomScrollbar.min.js"></script>
+    <script src="../dist/js/jquery.dataTables.min.js"></script>
+    <script src="../dist/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="../dist/js/index.js"></script>
+    <script src="../dist/js/scripts.js"></script>
+
+
+</body>
+
+</html>

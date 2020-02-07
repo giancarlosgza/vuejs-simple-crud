@@ -1,0 +1,95 @@
+/* ---------------------------------------------------
+    SIDEBAR 2
+----------------------------------------------------- */
+#sidebar2 {
+    width: 250px;
+    position: fixed;
+    top: 0;
+    right: -250px;
+    height: 100vh;
+    z-index: 999;
+    background: #ffffff;
+    color: #000000;
+    transition: all 0.3s;
+    overflow-y: scroll;
+    box-shadow: -3px 3px 3px rgba(0, 0, 0, 0.2);
+}
+ 
+#sidebar2.active {
+    right: 0;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 998;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+    top:0;
+	right:0;
+	bottom:0;
+	left:0;
+}
+
+.overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+#sidebar2 .sidebar-header {
+    padding: 20px;
+    background: #ffffff;
+}
+
+#sidebar2 ul.components {
+    padding: 20px 0;
+}
+
+#sidebar2 ul p {
+    color: #000000;
+    padding: 10px;
+}
+
+#sidebar2 ul li a {
+    padding: 10px;
+    font-size: 1.0em;
+    display: block;
+    color: #000000;
+    list-style-type: none;
+}
+
+#sidebar2 ul li a:hover {
+    color: #000000;
+    background: #d3d3d344;
+    text-decoration: none;
+}
+
+#sidebar2 ul li.active>a,
+a[aria-expanded="true"] {
+    color: #000000 !important;
+    background-color: #bebebe77;
+    transition: all 0.3s;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+#sidebar2 .dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    color: #000000 !important;
+    background: #ffffff;
+    transition: all 0.3s;
+}

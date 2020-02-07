@@ -1,0 +1,51 @@
+:root {
+    --theme-background: #fdfdfd;
+    --theme-on-primary: #000000;
+    --theme-on-primary-inverse: #ffffff;
+    --theme-primary: #ff3c00;
+    --theme-primary-hover: #f13400;
+    --theme-primary-active: #e32a00;
+    --theme-secondary: #415c6a;
+    --theme-secondary-hover: #334955;
+    --theme-secondary-active: #22343e;
+    --theme-success: #00c853;
+    --theme-warning: #ffab00;
+    --theme-danger: #d50000;
+    --theme-surface: #ffffff;
+    --theme-surface-bottom: #334955;
+    --theme-surface-1dp: #ffffff;
+    --theme-surface-card-outline: #dadce0;
+    --theme-on-surface: #757575;
+    --theme-text-field-filled: #f3f3f3;
+    --theme-text-field-filled-hover: #eeeeee;
+    --theme-text-field-filled-active: #d1d1d1;
+    --theme-text-field-outlined: #bbbbbb;
+    --theme-text-field-outlined-hover: #000000;
+    --theme-icons-wrap-secondary: #e8f0f6;
+}
+
+[data-theme=dark] {
+    --theme-background: #121212;
+    --theme-on-primary: #ffffff;
+    --theme-on-primary-inverse: #000000;
+    --theme-primary: #ffa689;
+    --theme-primary-hover: #ff815a;
+    --theme-primary-active: #ff6334;
+    --theme-secondary: #acc0cb;
+    --theme-secondary-hover: #8ca6b4;
+    --theme-secondary-active: #7492a2;
+    --theme-success: #8fdf9e;
+    --theme-warning: #fef697;
+    --theme-danger: #ffa68f;
+    --theme-surface: #272727;
+    --theme-surface-bottom: #272727;
+    --theme-surface-1dp: #1e1e1e;
+    --theme-surface-card-outline: #323232;
+    --theme-on-surface: #bdbdbd;
+    --theme-text-field-filled: #545454;
+    --theme-text-field-filled-hover: #363636;
+    --theme-text-field-filled-active: #161616;
+    --theme-text-field-outlined: #9c9c9c;
+    --theme-text-field-outlined-hover: #737373;
+    --theme-icons-wrap-secondary: #e8f0f63a;
+}
